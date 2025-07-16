@@ -4,15 +4,17 @@ let products = [
     { id: '3', name: 'Mouse', description: 'An ergonomic mouse', price: 80, quantity: 30 }
 ]
 
-/**
- * A plugin that provide encapsulated routes
- * @param {FastifyInstance} fastify encapsulated fastify instance
- * @param {Object} options plugin options, refer to https://fastify.dev/docs/latest/Reference/Plugins/#plugin-options
- */
-
 async function routes(fastify, opts) {
     fastify.get('/products', async (request, reply) => {
-        reply.send(products)
+        const instock = request.query.instock
+        const price = request.query.price
+        if (instock) {
+            reply.send(products.filter(p => p.quantity >= 1))
+        } else if (price) {
+            reply.send(products.filter(p => p.price <= price))
+        } else {
+            reply.send(products)
+        }
     })
     
     fastify.get('/products/:id', (request, reply) => {
