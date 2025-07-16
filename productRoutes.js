@@ -72,6 +72,24 @@ async function routes(fastify, opts) {
             reply.status(404).send({ error: 'Product not found' })
         }
     })
+
+    fastify.patch('/products/:id', (request, reply) => {
+        const id = request.params.id
+        const product = products.find(p => p.id === id)
+        if (product) {
+            for (const key in request.body) {
+                if (key in product) {
+                    console.log(key)
+                    product[key] = request.body[key]
+                } else {
+                    reply.status(400).send({ error: 'Invalid key' })
+                }
+            }
+            reply.status(200).send(product)
+        } else {
+            reply.status(404).send({ error: 'Product not found' })
+        }
+    })
 }
 
 module.exports = routes
